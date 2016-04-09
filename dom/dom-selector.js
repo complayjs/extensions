@@ -1,5 +1,5 @@
 import uniques from '../../helpers/array/uniques';
-import from from '../../helpers/array/from';
+import arrayFrom from '../../helpers/array/from';
 import isArrayLike from '../../helpers/array/is-array-like';
 import merge from '../../helpers/array/merge';
 
@@ -16,7 +16,7 @@ export default (function() {
 			let isString = typeof selector === 'string';
 
 			if (isString) {
-				if (context.nodeType) {
+				if (context.nodeType && context.nodeType === Node.ELEMENT_NODE) {
 					selector = context.querySelectorAll(selector);
 				} else {
 					let nodeArray = [];
