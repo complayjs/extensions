@@ -14,7 +14,7 @@ function makeRequestPromise(options) {
 		xhr.open(this.resource.method, this.resource.url);
 		xhr.onload = () => {
 			if (xhr.status >= 200 && xhr.status < 300) {
-				resolve(this.parse(xhr.response));
+				resolve({res: this.parse(xhr.response), service: options._this});
 			} else {
 				reject({
 					status: xhr.status,
@@ -56,7 +56,7 @@ export default (function ajaxExtension() {
 				this.resource.method = 'GET';
 			}
 
-			return makeRequestPromise.call(this);
+			return makeRequestPromise.call(this, {_this: this});
 		},
 
 		parse(rawData) {
@@ -72,7 +72,7 @@ export default (function ajaxExtension() {
 				this.resource.method = 'POST';
 			}
 
-			return makeRequestPromise.call(this);
+			return makeRequestPromise.call(this, {_this: this});
 		}	
 	}	
 }());
