@@ -6,6 +6,34 @@ let glob = getGlobalObject();
 // shim promises
 !glob.Promise && (glob.Promise = Plite);
 
+function makeRequestPromise(options) {
+
+	return new Promise((resolve, reject) => {
+		let xhr = new XMLHttpRequest(options);
+		
+		xhr.open(this.resource.method, this.resource.url);
+		xhr.onload = () => {
+			if (xhr.status >= 200 && xhr.status < 300) {
+				resolve(this.parse(xhr.response));
+			} else {
+				reject({
+					status: xhr.status,
+					statusText: xhr.statusText
+				});
+			}
+		};
+
+		xhr.onerror = function () {
+			reject({
+				status: xhr.status,
+				statusText: xhr.statusText
+			});
+		};
+
+		xhr.send();
+	});
+}
+
 export default (function ajaxExtension() {
 
 	let _resource = {};
@@ -20,42 +48,31 @@ export default (function ajaxExtension() {
 			_resource = res;
 		},
 
-		fetch(res) {
+		fetch(resource) {
 
-			this.resource = res || this.resource;
+			this.resource = resource || this.resource;
 
-			return new Promise((resolve, reject) => {
-				let xhr = new XMLHttpRequest();
-				
-				xhr.open(this.resource.method, this.resource.url);
-				xhr.onload = () => {
-					if (xhr.status >= 200 && xhr.status < 300) {
-						resolve(this.parse(xhr.response));
-					} else {
-						reject({
-							status: xhr.status,
-							statusText: xhr.statusText
-						});
-					}
-				};
+			if (!this.resource.method) {
+				this.resource.method = 'GET';
+			}
 
-				xhr.onerror = function () {
-					reject({
-						status: xhr.status,
-						statusText: xhr.statusText
-					});
-				};
-
-				xhr.send();
-			});
+			return makeRequestPromise.call(this);
 		},
 
-		parse() {
+		parse(rawData) {
 			// override this!
 			return arguments[0];
 		},
 
-		save() {
+		save(resource) {
+
+			this.resource = resource || this.resource;
+
+			if (!this.resource.method) {
+				this.resource.method = 'POST';
+			}
+
+			return makeRequestPromise.call(this);
 		}	
 	}	
 }());
