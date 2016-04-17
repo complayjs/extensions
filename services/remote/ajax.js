@@ -6,73 +6,68 @@ let glob = getGlobalObject();
 // shim promises
 !glob.Promise && (glob.Promise = Plite);
 
-function makeRequestPromise(options) {
+export default class AjaxExtensions {
 
-	return new Promise((resolve, reject) => {
-		let xhr = new XMLHttpRequest(options);
-		
-		xhr.open(this.resource.method, this.resource.url);
-		xhr.onload = () => {
-			if (xhr.status >= 200 && xhr.status < 300) {
-				resolve({res: this.parse(xhr.response), service: options._this});
-			} else {
+	get resource() {
+		return this._resource;
+	}
+
+	set resource(res) {
+		this._resource = res;
+	}
+
+	makeRequestPromise(options) {
+
+		return new Promise((resolve, reject) => {
+			let xhr = new XMLHttpRequest(options);
+			
+			xhr.open(this.resource.method, this.resource.url);
+			xhr.onload = () => {
+				if (xhr.status >= 200 && xhr.status < 300) {
+					resolve(this.parse(xhr.response));
+				} else {
+					reject({
+						status: xhr.status,
+						statusText: xhr.statusText
+					});
+				}
+			};
+
+			xhr.onerror = function () {
 				reject({
 					status: xhr.status,
 					statusText: xhr.statusText
 				});
-			}
-		};
+			};
 
-		xhr.onerror = function () {
-			reject({
-				status: xhr.status,
-				statusText: xhr.statusText
-			});
-		};
+			xhr.send();
+		});
+	}
 
-		xhr.send();
-	});
-}
+	fetch(resource) {
 
-export default (function ajaxExtension() {
+		this.resource = resource || this.resource;
 
-	let _resource = {};
+		if (!this.resource.method) {
+			this.resource.method = 'GET';
+		}
 
-	return {
+		return this.makeRequestPromise();
+	}
 
-		get resource() {
-			return _resource;
-		},
+	parse(rawData) {
+		// override this!
+		return arguments[0];
+	}
 
-		set resource(res) {
-			_resource = res;
-		},
+	save(resource) {
 
-		fetch(resource) {
+		this.resource = resource || this.resource;
 
-			this.resource = resource || this.resource;
+		if (!this.resource.method) {
+			this.resource.method = 'POST';
+		}
 
-			if (!this.resource.method) {
-				this.resource.method = 'GET';
-			}
-
-			return makeRequestPromise.call(this, {_this: this});
-		},
-
-		parse(rawData) {
-			// override this!
-			return arguments[0];
-		},
-
-		save(resource) {
-
-			this.resource = resource || this.resource;
-
-			if (!this.resource.method) {
-				this.resource.method = 'POST';
-			}
-
-			return makeRequestPromise.call(this, {_this: this});
-		}	
+		return this.makeRequestPromise();
 	}	
-}());
+}
