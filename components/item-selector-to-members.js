@@ -1,3 +1,5 @@
+import dashesToCamelCase from '../../helpers/string/dashes-to-camel-case';
+
 export default class ComponentExtensionItemSelectorToMembers {
     itemSelectorToMembers() {
 
@@ -19,21 +21,24 @@ export default class ComponentExtensionItemSelectorToMembers {
             });
 
             if (!isContainedInSubmodule && domItem.dataset.jsItem) {
-                if (this.items[domItem.dataset.jsItem + 's'] &&
-                    (this.items[domItem.dataset.jsItem + 's'] instanceof Array)) {
+
+                let itemsKey = dashesToCamelCase(domItem.dataset.jsItem);
+
+                if (this.items[itemsKey + 's'] &&
+                    (this.items[itemsKey + 's'] instanceof Array)) {
                     // add to pluralized key and array
-                    this.items[domItem.dataset.jsItem + 's'].push(domItem);
-                } else if (this.items[domItem.dataset.jsItem]) {
+                    this.items[itemsKey + 's'].push(domItem);
+                } else if (this.items[itemsKey]) {
                     // make pluralized key and array
-                    this.items[domItem.dataset.jsItem + 's'] = [
-                        this.items[domItem.dataset.jsItem],
+                    this.items[itemsKey + 's'] = [
+                        this.items[itemsKey],
                         domItem
                     ];
 
-                    delete this.items[domItem.dataset.jsItem];
+                    delete this.items[itemsKey];
                 } else {
                     // just one item
-                    this.items[domItem.dataset.jsItem] = domItem;
+                    this.items[itemsKey] = domItem;
                 }
             }
         });
