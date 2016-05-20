@@ -18,8 +18,9 @@ export default class DefaultReducers {
 
 		let results = [];
 		let originalIndexes = [];
+		let arr = this.toArray();
 
-		this.each((i, item) => {
+		arr.forEach((item, i) => {
 			if (typeof characteristics === 'function' && characteristics(item)) {
 				originalIndexes.push(i);
 				results.push(item);
