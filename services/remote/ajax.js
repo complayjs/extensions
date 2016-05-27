@@ -6,7 +6,7 @@ let glob = getGlobalObject();
 // shim promises
 !glob.Promise && (glob.Promise = Plite);
 
-export default class AjaxExtensions {
+export default class AjaxExtension {
 
 	get resource() {
 		return this._resource;

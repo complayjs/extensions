@@ -59,6 +59,8 @@ export default class TwoWayDataBind {
         this.saveOptions.push(saveOption);
 
         Object.defineProperty(options.sourceObj, options.sourceKey, {
+            enumerable: true,
+            configurable: true,
             get: () => {
                 return getFormat(options.bindObj[options.bindKey]);
             },
