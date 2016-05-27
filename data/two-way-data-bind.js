@@ -1,8 +1,8 @@
+function noop() {}
+
 export default class TwoWayDataBind {
     // @example http://jsfiddle.net/Derija93/RkTMD/1/
     sync(options = {}) {
-
-        options.sourceObj = options.sourceObj || this;
 
         let initial = options.sourceObj[options.sourceKey];
         let initialType = typeof initial;
@@ -42,15 +42,55 @@ export default class TwoWayDataBind {
             }
         }
 
+        let saveOption = {
+            srcObj: options.sourceObj,
+            srcKey: options.sourceKey,
+            bindObj: options.bindObj,
+            bindKey: options.bindKey
+        };
+
+        this.saveOptions = this.saveOptions || [];
+        this.saveOptions.push(saveOption);
+
         Object.defineProperty(options.sourceObj, options.sourceKey, {
-            get: function() {
+            get: () => {
                 return getFormat(options.bindObj[options.bindKey]);
             },
-            set: function(val) {
+            set: (val) => {
                 options.bindObj[options.bindKey] = setFormat(val);
             }
         });
 
         options.sourceObj[options.sourceKey] = initial;
+    }
+
+    separate(options = {}) {
+
+        let saveOptions = [];
+
+        if (options.sourceObj) {
+            if (options.sourceKey) {
+                // add saved option with sourceObj and sourceKey
+                saveOptions = this.saveOptions.filter(saveOption => {
+                    return  saveOption.srcObj === options.sourceObj &&
+                            saveOption.srcKey === options.sourceKey;
+                });
+            } else {
+                // add all saved options which are related to the passed sourceObj
+                saveOptions = this.saveOptions.filter(saveOption => {
+                    return saveOption.srcObj === options.sourceObj;
+                });
+            }
+        } else {
+            // add all saved options, clone array
+            saveOptions = this.saveOptions.slice(0);
+            this.saveOptions = [];
+        }
+
+        console.log(saveOptions);
+
+        saveOptions.forEach(saveOption => {
+            delete saveOption.srcObj[saveOption.srcKey];
+        })
     }
 }
