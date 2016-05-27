@@ -1,8 +1,14 @@
+import arrayFrom from '../../helpers/array/from';
 function noop() {}
 
 export default class TwoWayDataBind {
     // @example http://jsfiddle.net/Derija93/RkTMD/1/
     sync(options = {}) {
+
+        if (arguments.length > 1) {
+            Array.from(arguments).forEach(option => { this.sync(option); });
+            return;
+        }
 
         let initial = options.sourceObj[options.sourceKey];
         let initialType = typeof initial;
@@ -66,6 +72,11 @@ export default class TwoWayDataBind {
 
     separate(options = {}) {
 
+        if (arguments.length > 1) {
+            Array.from(arguments).forEach(option => { this.separate(option); });
+            return;
+        }
+
         let saveOptions = [];
 
         if (options.sourceObj) {
@@ -86,8 +97,6 @@ export default class TwoWayDataBind {
             saveOptions = this.saveOptions.slice(0);
             this.saveOptions = [];
         }
-
-        console.log(saveOptions);
 
         saveOptions.forEach(saveOption => {
             delete saveOption.srcObj[saveOption.srcKey];
