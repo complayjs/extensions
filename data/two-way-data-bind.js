@@ -18,7 +18,7 @@ export default class TwoWayDataBind {
         };
 
         let setFormat = (val) => {
-            if (val) {
+            if (typeof val !== 'undefined') {
                 return val;
             }
 
