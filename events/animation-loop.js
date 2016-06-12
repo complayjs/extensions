@@ -4,12 +4,8 @@ import animationFrame from '../../helpers/environment/request-animation-frame';
 export default class AnimationLoop {
 	
 	startCycle(options={}) {
-
-		this.update = this.update || this.abstractUpdate;
-		this.render = this.render || this.abstractRender;
-		this.onWindowResize = this.onWindowResize || this.abstractOnWindowResize;
-		this.onScroll = this.onScroll || this.abstractOnScroll;
-
+		this.animationUpdateStack = [];
+		this.animationRenderStack = [];
 		this.options = this.options || options;
 		this.lastTick = performance.now();
 		this.lastRender = this.lastTick; //Pretend the first draw was on first update.
@@ -35,40 +31,34 @@ export default class AnimationLoop {
 		}
 
 		this.queueUpdates(numTicks);
-		this.render(timeFrame);
+		this.animationStackRender(timeFrame);
 		this.lastRender = timeFrame;
-		
-		window.onResize = this.onWindowResize.bind(this);
 	}
 	
 	queueUpdates(numTicks) {
 		for (let i = 0; i < numTicks; i++) {
 			this.lastTick = this.lastTick + this.tickLength; //Now lastTick is this tick.
-			this.update(this.lastTick);
+			this.animationStackUpdate(this.lastTick);
 		}
 	}
 	
 	setInitialState() {
 		
-		this.update(this.lastTick);
-		this.render();
+		this.animationStackUpdate(this.lastTick);
+		this.animationStackRender();
 	}
 
-	abstractOnWindowResize(evt) {
-		
-	}
-
-	abstractOnScroll(evt) {
-		
-	}	
-
-	abstractUpdate(lastTick) {
-				
+	animationStackUpdate(lastTick) {
+		this.animationUpdateStack.forEach(animationUpdateCallback => {
+			animationUpdateCallback.apply(animationUpdateCallback, arguments);
+		});
 		return this;
 	}
 
-	abstractRender(timeFrame) {
-		
+	animationStackRender(timeFrame) {
+		this.animationRenderStack.forEach(animationRenderCallback => {
+			animationRenderCallback.apply(animationRenderCallback, arguments);
+		});
 		return this;		
 	}
 }
