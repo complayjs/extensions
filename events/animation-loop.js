@@ -2,10 +2,18 @@
 import animationFrame from '../../helpers/environment/request-animation-frame';
 
 export default class AnimationLoop {
-	
+
+	get animationUpdateStack() {
+		this._animationUpdateStack = this._animationUpdateStack || [];
+		return this._animationUpdateStack;
+	}
+
+	get animationRenderStack() {
+		this._animationRenderStack = this._animationRenderStack || [];
+		return this._animationRenderStack;
+	}
+
 	startCycle(options={}) {
-		this.animationUpdateStack = [];
-		this.animationRenderStack = [];
 		this.options = this.options || options;
 		this.lastTick = performance.now();
 		this.lastRender = this.lastTick; //Pretend the first draw was on first update.
