@@ -1,5 +1,6 @@
-// polyfill - animationFrame is undefined, requestAnimationFrame is added to the global object
+// polyfill - if animationFrame is undefined, requestAnimationFrame is added to the global object
 import animationFrame from '../../helpers/environment/request-animation-frame';
+import assign from '../../helpers/object/assign';
 
 export default class AnimationLoop {
 
@@ -14,7 +15,7 @@ export default class AnimationLoop {
 	}
 
 	startCycle(options={}) {
-		this.options = this.options || options;
+		this.options = Object.assign({}, this.options, options);
 		this.lastTick = performance.now();
 		this.lastRender = this.lastTick; //Pretend the first draw was on first update.
 		this.tickLength = this.options.tickLength || 30; //This sets your animation to run at 20Hz (50ms)
