@@ -5,7 +5,7 @@ export default class ComponentExtensionItemSelectorToMembers {
 
         let selector = this.options.itemSelector || '[data-js-item]';
         let domItemsInSubModules = Array.from(this.el.querySelectorAll(
-            `${this.moduleSelector}`)
+            `${this.selector}`)
         );
         let domItems = Array.from(this.el.querySelectorAll(selector));
 
