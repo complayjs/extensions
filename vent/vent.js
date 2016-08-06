@@ -42,5 +42,15 @@ export default function Vent(newTarget){
 		while(j=list[i++]) j[0].apply(j[1], empty.slice.call(arguments, 1))
 	};
 
+    target.cleanCustomEvents = function() {
+        if (!isNaN(index) && targets[index] && targets[index].uid && events[targets[index].uid]) {
+            delete events[targets[index].uid];
+        }
+
+        if (!isNaN(index)) {
+            targets.splice(index,1);
+        }
+    }
+
 	return targets[index];
 }
