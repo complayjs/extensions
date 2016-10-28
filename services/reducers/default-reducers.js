@@ -2,14 +2,14 @@ export default class DefaultReducers {
 
 	static reduce(cb, start = 0) {
 
-		let arr = this.toArray(this, !!(this.Model));
+		let arr = this.toArray(!!(this.Model), this);
 
 		return arr.reduce(cb, start);
 	}
 
 	static filter(cb) {
 
-		let arr = this.toArray(this, !!(this.Model));
+		let arr = this.toArray(!!(this.Model), this);
 
 		return arr.filter(cb);
 	}
@@ -18,7 +18,7 @@ export default class DefaultReducers {
 
 		let results = [];
 		let originalIndexes = [];
-		let arr = this.toArray(this, !!(this.Model));
+		let arr = this.toArray(!!(this.Model), this);
 
 		arr.forEach((item, i) => {
 
